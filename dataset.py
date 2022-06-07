@@ -33,7 +33,6 @@ class AniDataset(Dataset):
 
         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
         image = Image.open(img_path).convert("RGB")
-        boxes = torch.tensor(boxes)
 
         if self.transform:
             image = self.transform(image)
@@ -41,7 +40,7 @@ class AniDataset(Dataset):
         # Convert To Cells
         label_matrix = torch.zeros((self.S, self.S, self.C + 5 * self.B))
         for box in boxes:
-            class_label, x, y, width, height = box.tolist()
+            class_label, x, y, width, height = box
             class_label = int(class_label)
 
             # i,j represents the cell row and cell column
