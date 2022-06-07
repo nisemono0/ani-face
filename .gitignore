@@ -2,8 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-models/net.pth.tar
-data/*
 
 # C extensions
 *.so
