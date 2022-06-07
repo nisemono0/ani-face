@@ -7,7 +7,8 @@ Following [this paper](https://pjreddie.com/media/files/papers/yolo_1.pdf)<br>
 
 
 # How to use
-Download the model from [here](https://github.com/nisemono0/ani-face/releases) and move it to ```models``` directory <br>
+Run ```pip install -r requirements.txt``` <br>
+Download the model from [here](https://github.com/nisemono0/ani-face/releases) and move it to the ```models``` directory <br>
 Run ```python run.py PATH_TO_IMAGE``` to run on an image or ```python -h, --help``` for a list of arguments
 
 ```
