@@ -80,7 +80,7 @@ def main():
 
 
     # If all epochs are done, save the model and a checkpoint
-    save_model_only(model, filename=f"{cfg.MODEL_FILE}_e{cfg.EPOCHS}_model_only")
+    save_model_only(model, filename=f"{cfg.MODEL_FILE}")
     save_checkpoint(model, optimizer, scheduler, e, filename=f"{cfg.MODEL_FILE}_e{cfg.EPOCHS}_checkpoint")
 
 if __name__ == "__main__":
