@@ -35,7 +35,7 @@ class AniDataset(Dataset):
         image = Image.open(img_path).convert("RGB")
 
         if self.transform:
-            image = self.transform(image)
+            image, boxes = self.transform(image, boxes)
         
         # Convert To Cells
         label_matrix = torch.zeros((self.S, self.S, self.C + 5 * self.B))

@@ -1,6 +1,6 @@
 import torch
 import torchvision.transforms as TF
-from torchvision.transforms import Compose
+import torchvision.transforms.functional as F
 
 # SEED = 1337
 # torch.manual_seed(SEED)
@@ -69,6 +69,55 @@ ARCH_CONFIG = [
 ]
 
 # Image transforms
+class MyVerticalFlip(torch.nn.Module):
+    def __init__(self, p=0.5):
+        super().__init__()
+        self.p = p
+
+    def forward(self, img, bboxes):
+        if torch.rand(1) < self.p:
+            flipped_boxes = []
+            for box in bboxes:
+                class_prob, x, y, width, height = box
+                y = 1.0 - y 
+                flipped_boxes.append([class_prob, x, y, width, height])
+            return F.vflip(img), flipped_boxes
+        return img, bboxes
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(p={})'.format(self.p)
+
+class MyHorizontalFlip(torch.nn.Module):
+    def __init__(self, p=0.5):
+        super().__init__()
+        self.p = p
+
+    def forward(self, img, bboxes):
+        if torch.rand(1) < self.p:
+            flipped_boxes = []
+            for box in bboxes:
+                class_prob, x, y, width, height = box
+                x = 1.0 - x
+                flipped_boxes.append([class_prob, x, y, width, height])
+            return F.hflip(img), flipped_boxes
+        return img, bboxes
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(p={})'.format(self.p)
+
+
+class Compose(object):
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, image, bboxes):
+        for t in self.transforms:
+            if isinstance(t, MyVerticalFlip) or isinstance(t,MyHorizontalFlip):
+                image, bboxes = t(image, bboxes)
+            else:
+                image = t(image)
+        return image, bboxes
+
 TRAIN_TRANSFORMS = Compose(
     [
         TF.Resize((IMAGE_SIZE, IMAGE_SIZE)),
@@ -79,8 +128,10 @@ TRAIN_TRANSFORMS = Compose(
                 TF.RandomAdjustSharpness(sharpness_factor=10 ,p=0.6),
             ]
         ),
+        MyVerticalFlip(p=0.5),
+        MyHorizontalFlip(p=0.3),
         TF.RandomGrayscale(p=0.1),
-        TF.RandomPosterize(4, p=0.3),
+        TF.RandomPosterize(4, p=0.2),
         TF.ToTensor()
     ]
 )
