@@ -14,7 +14,7 @@ def main(image_path, model_path, iou_threshold, threshold, border_thickness, sav
     load_model_only(torch.load(model_path, map_location=cfg.DEVICE), model)
 
     image = Image.open(image_path).convert("RGB")
-    image = cfg.TEST_TRANSFORMS(image)
+    image, _ = cfg.TEST_TRANSFORMS(image, None)
 
     boxes = get_single_bboxes(image, model, iou_threshold=iou_threshold, threshold=threshold, box_format="midpoint")
     draw_pred_image(image_path=image_path, thickness=border_thickness, save_image=save_image, boxes=boxes)
