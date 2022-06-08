@@ -187,20 +187,35 @@ def mean_average_precision(pred_boxes, true_boxes, iou_threshold, box_format, nu
 
     return sum(average_precisions) / len(average_precisions)
 
+def _get_font_text(img, img_fraction, text):
+    img_w, img_h = img.size
+    # portion of image width you want text width to be
+    fontsize = 1  # starting font size
+    font = ImageFont.truetype(cfg.FONT_NAME, fontsize)
+    if img_w > img_h:
+        breakpoint = img_fraction * img_h
+    else:
+        breakpoint = img_fraction * img_w
+    jumpsize = 75
+    while True:
+        if font.getsize(text)[0] < breakpoint:
+            fontsize += jumpsize
+        else:
+            jumpsize = jumpsize // 2
+            fontsize -= jumpsize
+        font = ImageFont.truetype(cfg.FONT_NAME, fontsize)
+        if jumpsize <= 1:
+            break
+    return font, fontsize
 
-def draw_pred_image(image_path, thickness, save_image, boxes):
-    """
-    Takes the predicted boxes and draws them on the image
-    """
-    img = Image.open(image_path).convert("RGB")
-
+def _get_box_coords(bboxes, img):
     img_w, img_h = img.size
 
-    for box in boxes:
+    coords = []
+    for box in bboxes:
         if box != []:
-            # Adapted from the original darknet implementation
-            # https://github.com/pjreddie/darknet/blob/810d7f797bdb2f021dbe65d2524c2ff6b8ab5c8b/src/image.c#L283-L291
-            _, _, x, y, w, h = tuple(box)
+            # Adapted from https://github.com/pjreddie/darknet/blob/810d7f797bdb2f021dbe65d2524c2ff6b8ab5c8b/src/image.c#L283-L291
+            pred_class, class_prob, x, y, w, h = tuple(box)
             l = int((x - w / 2) * img_w)
             r = int((x + w / 2) * img_w)
             t = int((y - h / 2) * img_h)
@@ -213,38 +228,32 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
                 t = 0
             if b > img_h - 1:
                 b = img_h - 1
-            
-            # Format prob on image
-            prob = box[1] * 100.0
-            if prob >= 100:
-                text = "100%"
-            else:
-                text = f"{(box[1] * 100):.2f}%"
-            fontsize = 1  # starting font size
+            coords.append([pred_class, class_prob, l, r, t, b])
 
-            # portion of image width you want text width to be
-            img_fraction = 0.08
+    return coords
 
-            font_name = cfg.FONT_NAME
+def draw_pred_image(image_path, thickness, save_image, boxes):
+    """
+    Takes the predicted boxes and draws them on the image
+    """
+    img = Image.open(image_path).convert("RGB")
+    boxes = _get_box_coords(boxes, img)
+    for box in boxes:
+        _, prob, l, r, t, b = box
+        # Format prob on image
+        prob = box[1] * 100.0
+        if prob >= 100:
+            text = "100%"
+        else:
+            text = f"{(box[1] * 100):.2f}%"
 
-            font = ImageFont.truetype(font_name, fontsize)
-            breakpoint = img_fraction * img.size[0]
-            jumpsize = 75
-            while True:
-                if font.getsize(text)[0] < breakpoint:
-                    fontsize += jumpsize
-                else:
-                    jumpsize = jumpsize // 2
-                    fontsize -= jumpsize
-                font = ImageFont.truetype(font_name, fontsize)
-                if jumpsize <= 1:
-                    break
+        font, fontsize = _get_font_text(img, 0.08, text)
+        
+        # Draw rectangle
+        ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
+        ImageDraw.Draw(img).rectangle([(l, t), (r, b-(b-t)-fontsize)], fill="red")
 
-            ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
-
-            ImageDraw.Draw(img).rectangle([(l, t), (r, b-(b-t)-fontsize)], fill="red")
-
-            ImageDraw.Draw(img).text((l+thickness, t-fontsize), text=text, font=font, fill=(0,0,0))
+        ImageDraw.Draw(img).text((l+thickness, t-fontsize), text=text, font=font, fill=(0,0,0))
 
     if save_image:
         from os.path import splitext
