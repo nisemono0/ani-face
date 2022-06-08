@@ -214,8 +214,6 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
             if b > img_h - 1:
                 b = img_h - 1
             
-            ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
-
             # Format prob on image
             prob = box[1] * 100.0
             if prob >= 100:
@@ -225,7 +223,7 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
             fontsize = 1  # starting font size
 
             # portion of image width you want text width to be
-            img_fraction = 0.09
+            img_fraction = 0.08
 
             font_name = cfg.FONT_NAME
 
@@ -242,7 +240,11 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
                 if jumpsize <= 1:
                     break
 
-            ImageDraw.Draw(img).text((l+thickness, t+thickness), text=text, font=font, fill=(0,255,0))
+            ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
+
+            ImageDraw.Draw(img).rectangle([(l, t), (r, b-(b-t)-fontsize)], fill="red")
+
+            ImageDraw.Draw(img).text((l+thickness, t-fontsize), text=text, font=font, fill=(0,0,0))
 
     if save_image:
         from os.path import splitext
