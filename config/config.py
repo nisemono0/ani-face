@@ -9,7 +9,7 @@ import torchvision.transforms.functional as F
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # Hyperparams
 BATCH_SIZE = 32 # 64 in original paper, not enough vRAM for 64 :(
-EPOCHS = 70 # Takes about 5 min / epoch on google colab
+EPOCHS = 100 # Takes about 5 min / epoch on google colab
 LEARN_RATE = 5e-5
 WEIGHT_DECAY = 5e-6
 # IoU Hyperparams
@@ -18,7 +18,7 @@ THRESHOLD = 0.4
 
 # Scheduler step, gamma
 # Multiply learning rate by gamma when epoch reacheas a milestone
-MILESTONES = [30]
+MILESTONES = [40]
 SCH_GAMMA = 0.1
 
 # Data
