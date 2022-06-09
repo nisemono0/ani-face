@@ -270,8 +270,7 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
         new_file = file_no_ext + "_pred.png"
         img.save(new_file)
     else:
-        plt.imshow(img)
-        plt.show()
+        img.show()
 
 def get_bboxes(loader, model, iou_threshold, threshold, box_format):
     all_pred_boxes = []
