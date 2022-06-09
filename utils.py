@@ -238,6 +238,14 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
     """
     img = Image.open(image_path).convert("RGB")
     boxes = _get_box_coords(boxes, img)
+
+    if thickness == 0:
+        img_w, img_h = img.size
+        thickness_fraction = 0.005
+        thickness = int(max(img_h, img_w) * thickness_fraction)
+        if thickness <= 1:
+            thickness = 2
+
     for box in boxes:
         _, prob, l, r, t, b = box
         # Format prob on image
@@ -246,14 +254,9 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
             text = "100%"
         else:
             text = f"{(box[1] * 100):.2f}%"
-
+        
         font, fontsize = _get_font_text(img, 0.08, text)
 
-        img_w, img_h = img.size
-        thickness_fraction = 0.005
-        thickness = int(max(img_h, img_w) * thickness_fraction)
-        if thickness <= 1:
-            thickness = 2
 
         # Draw rectangle
         ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
