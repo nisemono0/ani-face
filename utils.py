@@ -192,10 +192,10 @@ def _get_font_text(img, img_fraction, text):
     # portion of image width you want text width to be
     fontsize = 1  # starting font size
     font = ImageFont.truetype(cfg.FONT_NAME, fontsize)
-    if img_w > img_h:
-        breakpoint = img_fraction * img_h
-    else:
-        breakpoint = img_fraction * img_w
+    breakpoint = min(img_w, img_h) * img_fraction
+    if breakpoint <= 20:
+        breakpoint = 30
+
     jumpsize = 75
     while True:
         if font.getsize(text)[0] < breakpoint:
@@ -248,7 +248,13 @@ def draw_pred_image(image_path, thickness, save_image, boxes):
             text = f"{(box[1] * 100):.2f}%"
 
         font, fontsize = _get_font_text(img, 0.08, text)
-        
+
+        img_w, img_h = img.size
+        thickness_fraction = 0.005
+        thickness = int(max(img_h, img_w) * thickness_fraction)
+        if thickness <= 1:
+            thickness = 2
+
         # Draw rectangle
         ImageDraw.Draw(img).rectangle([(l, t), (r, b)], outline="red", width=thickness)
         ImageDraw.Draw(img).rectangle([(l, t), (r, b-(b-t)-fontsize)], fill="red")
