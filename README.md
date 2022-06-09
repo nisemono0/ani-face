@@ -1,6 +1,6 @@
 # Anime face detector
 <p align="center">Example</p>
-<p align="center"> <img src="https://user-images.githubusercontent.com/12276968/172438599-6f4e4c0f-4182-4620-b51e-68776dae14c0.png" width="320"/> </p>
+<p align="center"> <img src="https://user-images.githubusercontent.com/12276968/172742349-707d8aa6-1d36-4780-b607-8a45910b1110.png" width="320"/> </p>
 
 Trained on [this dataset](https://www.kaggle.com/datasets/andy8744/annotated-anime-faces-dataset)<br>
 Following [this paper](https://pjreddie.com/media/files/papers/yolo_1.pdf)<br>
