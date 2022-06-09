@@ -1,6 +1,10 @@
+from os.path import dirname, join, realpath, split
+
 import torch
 import torchvision.transforms as TF
 import torchvision.transforms.functional as F
+
+_MAIN_PATH = split(dirname(realpath(__file__)))[0]
 
 # SEED = 1337
 # torch.manual_seed(SEED)
@@ -26,19 +30,19 @@ NUM_WORKERS = 6 # colab has 2 cores cpu, set this to 2 if you wanna train it on 
 PIN_MEMORY = True
 # Model
 LOAD_MODEL = False
-MODEL_FILE = "models/net.pth.tar"
+MODEL_FILE = join(_MAIN_PATH, "models/net.pth.tar")
 # Data paths
-TRAIN_IMG_DIR = "data/train/images"
-TRAIN_LABEL_DIR = "data/train/labels"
+TRAIN_IMG_DIR = join(_MAIN_PATH, "data/train/images")
+TRAIN_LABEL_DIR = join(_MAIN_PATH, "data/train/labels")
 
-TEST_IMG_DIR = "data/test/images"
-TEST_LABEL_DIR = "data/test/labels"
+TEST_IMG_DIR = join(_MAIN_PATH, "data/test/images")
+TEST_LABEL_DIR = join(_MAIN_PATH, "data/test/labels")
 
-TRAIN_CSV = "data/train.csv"
-TEST_CSV = "data/test.csv"
+TRAIN_CSV = join(_MAIN_PATH, "data/train.csv")
+TEST_CSV = join(_MAIN_PATH, "data/test.csv")
 
 # Misc
-FONT_NAME="./config/unispace-bd.ttf"
+FONT_NAME = join(_MAIN_PATH, "config/unispace-bd.ttf")
 IMAGE_SIZE = 448
 
 # Model architecture
