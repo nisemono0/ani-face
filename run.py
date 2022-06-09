@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--model", metavar="MODEL", type=str, default=cfg.MODEL_FILE, dest="model_path", help="Path to saved model")
     parser.add_argument("-i", "--iou", metavar="IOU_THRESHOLD", type=float, default=0.4, dest="iou_threshold", help="Percent IoU threshold at which boxes are dropped")
     parser.add_argument("-d", "--drop", metavar="DROP_THRESHOLD", type=float, default=0.4, dest="drop_threshold", help="Percent threshold at which a box is dropped")
-    parser.add_argument("-b", "--border", metavar="BORDER", type=int, default=7, dest="border_thickness", help="Thickness of the drawn border")
+    parser.add_argument("-b", "--border", metavar="BORDER", type=int, default=0, dest="border_thickness", help="Thickness of the drawn border")
     parser.add_argument("-s", "--save", metavar="SAVE", type=bool, default=False, dest="save_image", help="Save predicted image")
     args = parser.parse_args()
 
