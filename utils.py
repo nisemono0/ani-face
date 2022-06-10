@@ -317,7 +317,8 @@ def get_single_bboxes(image, model, iou_threshold, threshold, box_format):
     Returns a list of nms bboxes
     """
     model.eval()
-
+    
+    image = image.to(cfg.DEVICE)
     image = image.reshape((1, 3, cfg.IMAGE_SIZE, cfg.IMAGE_SIZE))
 
     with torch.no_grad():
@@ -343,20 +344,20 @@ def convert_cellboxes(predictions, S=7):
 
     predictions = predictions.to(cfg.DEVICE)
     batch_size = predictions.shape[0]
-    predictions = predictions.reshape(batch_size, S, S, 11).to(cfg.DEVICE)
-    bboxes1 = predictions[..., 2:6].to(cfg.DEVICE)
-    bboxes2 = predictions[..., 7:11].to(cfg.DEVICE)
-    scores = torch.cat((predictions[..., 1].unsqueeze(0), predictions[..., 6].unsqueeze(0)), dim=0).to(cfg.DEVICE)
+    predictions = predictions.reshape(batch_size, S, S, 11)
+    bboxes1 = predictions[..., 2:6]
+    bboxes2 = predictions[..., 7:11]
+    scores = torch.cat((predictions[..., 1].unsqueeze(0), predictions[..., 6].unsqueeze(0)), dim=0)
     best_box = scores.argmax(0).unsqueeze(-1).to(cfg.DEVICE)
     best_boxes = (bboxes1 * (1 - best_box) + best_box * bboxes2).to(cfg.DEVICE)
     cell_indices = torch.arange(7).repeat(batch_size, 7, 1).unsqueeze(-1).to(cfg.DEVICE)
     x = 1 / S * (best_boxes[..., :1] + cell_indices)
     y = 1 / S * (best_boxes[..., 1:2] + cell_indices.permute(0, 2, 1, 3))
     w_y = 1 / S * best_boxes[..., 2:4]
-    converted_bboxes = torch.cat((x, y, w_y), dim=-1).to(cfg.DEVICE)
-    predicted_class = predictions[..., :1].argmax(-1).unsqueeze(-1).to(cfg.DEVICE)
-    best_confidence = torch.max(predictions[..., 1], predictions[..., 6]).unsqueeze(-1).to(cfg.DEVICE)
-    converted_preds = torch.cat((predicted_class, best_confidence, converted_bboxes), dim=-1).to(cfg.DEVICE)
+    converted_bboxes = torch.cat((x, y, w_y), dim=-1)
+    predicted_class = predictions[..., :1].argmax(-1).unsqueeze(-1)
+    best_confidence = torch.max(predictions[..., 1], predictions[..., 6]).unsqueeze(-1)
+    converted_preds = torch.cat((predicted_class, best_confidence, converted_bboxes), dim=-1)
 
     return converted_preds
 
