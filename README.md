@@ -52,7 +52,10 @@ image,label
 ...
 ```
 
-Run ```python train.py``` to train <br>
+Run ```python train.py``` to train with the default arguments or ```python train.py -h, --help``` to see help <br>
+```
+train.py [-h] [-s SPLIT_SIZE] [-b NUM_BOXES] [-c NUM_CLASSES]
+```
 Run ```python test.py``` to test <br>
 
 # Note
