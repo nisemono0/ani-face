@@ -1,3 +1,5 @@
+import argparse
+
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -30,8 +32,8 @@ def train_func(train_loader, model, optimizer, loss_func):
     
     return sum(mean_loss)/len(mean_loss)
 
-def main():
-    model = YOLOv1(in_channels=3, split_size=7, num_boxes=2, num_classes=1).to(cfg.DEVICE)
+def main(split_size, num_boxes, num_classes):
+    model = YOLOv1(in_channels=3, split_size=split_size, num_boxes=num_boxes, num_classes=num_classes).to(cfg.DEVICE)
 
     # Original paper uses SGD as optimizer
     optimizer = optim.Adam(
@@ -84,4 +86,15 @@ def main():
     save_checkpoint(model, optimizer, scheduler, e, filename=f"{cfg.MODEL_FILE}_e{cfg.EPOCHS}_checkpoint")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Run a single image through the network", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument("-s", "--split", metavar="SPLIT_SIZE", type=int, default=7, dest="split_size", help="Split size of the image")
+    parser.add_argument("-b", "--boxes", metavar="NUM_BOXES", type=int, default=2, dest="num_boxes", help="Number of boxes per split cell")
+    parser.add_argument("-c", "--classes", metavar="NUM_CLASSES", type=int, default=1, dest="num_classes", help="Number of classes")
+    args = parser.parse_args()
+
+    split_size = args.split_size
+    num_boxes = args.num_boxes
+    num_classes = args.num_classes
+    
+    main(split_size, num_boxes, num_classes)
